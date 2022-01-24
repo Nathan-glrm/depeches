@@ -26,14 +26,14 @@ public class Categorie {
 
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
-
         try {
             // lecture du fichier d'entrée
             FileInputStream file = new FileInputStream(nomFichier);
             Scanner scanner = new Scanner(file);
 
             while (scanner.hasNextLine()) {
-
+                String line = scanner.nextLine();
+                String chaine = line.substring(0, line.indexOf(":"));
             }
             scanner.close();
         } catch (IOException e) {
