@@ -31,4 +31,3 @@ Pékin:2
 stade:2
 PSG:2
 -:1
-

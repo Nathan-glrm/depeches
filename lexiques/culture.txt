@@ -23,8 +23,8 @@ audiovisuel:2
 multimédia:2
 dessinateurs:2
 tragédie:1
-oeuvres:3
-oeuvre:3
+oeuvres:2
+oeuvre:2
 toile:2
 festivals:3
 DVD:2

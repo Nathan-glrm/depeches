@@ -66,12 +66,55 @@ public class Classification {
 
         //Chargement des dépêches en mémoire
         System.out.println("chargement des dépêches");
-        ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
+        ArrayList<Depeche> depeches = lectureDepeches("./test.txt");
 
         for (int i = 0; i < depeches.size(); i++) {
             depeches.get(i).afficher();
         }
+        System.out.println("Fin de l'affichage des dépêches.");
+        */
 
+        // Create different categories
+        ArrayList<PaireChaineEntier> paires = new ArrayList<>();
+        Categorie culture = new Categorie("culture");
+        Categorie economie = new Categorie("economie");
+        Categorie environnementsiences = new Categorie("environnement-sciences");
+        Categorie politique = new Categorie("politique");
+        Categorie sport = new Categorie("sports");
+
+
+        // New ArrayList for categories
+        ArrayList<Categorie> cat = new ArrayList<>();
+        cat.add(culture);
+        cat.add(economie);
+        cat.add(environnementsiences);
+        cat.add(politique);
+        cat.add(sport);
+
+        // Initialize lexical vectors
+        culture.initLexique("./lexiques/culture.txt");
+        economie.initLexique("./lexiques/economie.txt");
+        environnementsiences.initLexique("./lexiques/environnements-sciences.txt");
+        politique.initLexique("./lexiques/politique.txt");
+        sport.initLexique("./lexiques/sports.txt");
+
+        ArrayList<PaireChaineEntier> liste = new ArrayList<>();
+
+        int depecheid = 105;
+        liste.add(new PaireChaineEntier("Culture", culture.score(depeches.get(depecheid))));
+        liste.add(new PaireChaineEntier("Economie", economie.score(depeches.get(depecheid))));
+        liste.add(new PaireChaineEntier("Sciences", environnementsiences.score(depeches.get(depecheid))));
+        liste.add(new PaireChaineEntier("Politique", politique.score(depeches.get(depecheid))));
+        liste.add(new PaireChaineEntier("Sport", sport.score(depeches.get(depecheid))));
+        /*
+        System.out.println("Culture: " + culture.score(depeches.get(depecheid)));
+        System.out.println("Economie: " + economie.score(depeches.get(depecheid)));
+        System.out.println("Sciences: " + environnementsiences.score(depeches.get(depecheid)));
+        System.out.println("Politique: " + politique.score(depeches.get(depecheid)));
+        System.out.println("Sport: " + sport.score(depeches.get(depecheid)));
+        */
+
+        Categorie.classementDepeches(depeches, cat, "./res.txt");
     }
 
 
