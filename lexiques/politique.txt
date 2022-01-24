@@ -48,3 +48,9 @@ réforme:2
 métropole:1
 filières:2
 départements:2
+Fillon:1
+conseil:1
+réélu:2
+administratif:2
+secrétaire:2
+PCF:1
