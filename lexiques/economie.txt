@@ -1,0 +1,15 @@
+avocat:1
+emploi:2
+industrie:1
+salarié:2
+gouvernements:1
+banque:2
+entreprise:2
+OCDE:2
+dollars:1
+euro:1
+européen:1
+poste:1
+commerce:2
+crédit:1
+
