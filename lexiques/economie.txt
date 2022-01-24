@@ -1,5 +1,6 @@
 avocat:1
 emploi:2
+emplois:2
 industrie:1
 salarié:2
 gouvernements:1
@@ -8,6 +9,7 @@ entreprise:2
 OCDE:2
 dollars:3
 euro:2
+euros:2
 européen:1
 poste:1
 commerce:2

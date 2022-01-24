@@ -44,6 +44,7 @@ public class Categorie {
                 Paires.add(unePaire);
             }
             scanner.close();
+            this.lexique = Paires;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -109,7 +110,6 @@ public class Categorie {
         }
 
     }
-
 
     //calcul du score d'une dépêche pour la catégorie
     public int score(Depeche d) {

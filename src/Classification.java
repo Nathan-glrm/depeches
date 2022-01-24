@@ -68,7 +68,8 @@ public class Classification {
         System.out.println("chargement des dépêches");
         ArrayList<Depeche> depeches = lectureDepeches("./test.txt");
 
-        for (int i = 0; i < depeches.size(); i++) {
+        //Affichage des depeches
+        /*for (int i = 0; i < depeches.size(); i++) {
             depeches.get(i).afficher();
         }
         System.out.println("Fin de l'affichage des dépêches.");
