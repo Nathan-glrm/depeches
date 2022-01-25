@@ -19,6 +19,13 @@ public class PaireChaineEntier {
         this.entier = entier;
     }
 
+    public void increment(){
+        this.entier++;
+    }
+    public void decrement(){
+        this.entier = this.entier - 2;
+    }
+
     @Override
     public String toString() {
         return chaine + ':' + entier;

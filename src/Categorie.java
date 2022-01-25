@@ -30,6 +30,7 @@ public class Categorie {
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
         ArrayList<PaireChaineEntier> Paires = new ArrayList<>();
+        System.out.println("Chargement du fichier " + nomFichier);
         try {
             // lecture du fichier d'entrée
             FileInputStream file = new FileInputStream(nomFichier); // open file for read
@@ -48,6 +49,7 @@ public class Categorie {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Fin du chargement de " + nomFichier);
     }
 
 

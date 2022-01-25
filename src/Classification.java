@@ -44,32 +44,17 @@ public class Classification {
         ArrayList<PaireChaineEntier> resultat = new ArrayList<>();
         ArrayList<String> tempresult = new ArrayList<>();
         categorie = categorie.toUpperCase();
-        // Recherche dichotomique pour trouver la première depeche de la catégorie selectionnée car depeches est trié par catégorie
+        //Les depeches étant regroupées par catégorie, on recherche l'index de la première depeche de la catégorie recherchée.
 
-
-        //INUTILE DE FAIRE UNE RECHERCHE DICHO, LES CATEGORIES NE SONT PAS TRIE PAR ORDRE ALPHABETIQUE, FAIRE UNE SIMPLE RECHERCHE SEQUENTIELLE
-
-
-        int inf = 0;
-        int sup = depeches.size()-1;
-        int m;
-        while(inf < sup){
-            m = (inf + sup) / 2;
-            System.out.println(categorie);
-            System.out.println(depeches.get(m).getCategorie());
-            System.out.println(depeches.get(m).getCategorie().compareTo(categorie));
-            if (depeches.get(m).getCategorie().compareToIgnoreCase(categorie) >= 0){
-                sup = m;
-            }
-            else{
-                inf = m + 1;
-            }
+        int i = 0;
+        while(i < depeches.size() && depeches.get(i).getCategorie().compareTo(categorie) != 0){
+            i++;
         }
-        if (depeches.get(sup).getCategorie().compareTo(categorie) != 0){
+        if (i == depeches.size()){
             throw new CategorieNotExist("Catégorie n'existe pas dans depeches");
         }
-        // Sup(ou inf) correspond à l'index du premier élément de depeches correspondant à la catégorie
-        int i = sup;
+        // i correspond à l'index du premier élément de depeches correspondant à la catégorie
+
 
         // IDEE OPTI: Trier le vecteur resultat pour faire bcp moins de comparaison dans le cas où on fait sans le tempresult
         while (i < depeches.size() && depeches.get(i).getCategorie().compareTo(categorie) == 0){
@@ -80,7 +65,6 @@ public class Classification {
                 }
             }
         }
-        System.out.println(resultat);
 
         return resultat;
 
@@ -89,11 +73,140 @@ public class Classification {
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
     }
 
-    public static int poidsPourScore(int score) {
-        return 0;
+
+    private static void fusionGD(ArrayList<PaireChaineEntier> Scores, int inf, int sup, int m){
+        ArrayList<PaireChaineEntier> temp = new ArrayList<>();
+        int i = inf;
+        int j = m+1;
+        while (i <= m && j <= sup){
+            if (Scores.get(i).getEntier() >= Scores.get(j).getEntier()){
+                temp.add(Scores.get(i));
+                i++;
+            }
+            else{
+                temp.add(Scores.get(j));
+                j++;
+            }
+        }
+        while (i <= m){
+            temp.add(Scores.get(i));
+            i++;
+        }
+        while (j <= sup){
+            temp.add(Scores.get(j));
+            j++;
+        }
+        int k = 0;
+        int l = sup - inf;
+        while (k <= l){
+            Scores.set(k + inf, temp.get(k));
+            k++;
+        }
     }
 
+    private static void triFusion(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
+        if (inf < sup) {
+            int m = (inf + sup) / 2;
+            triFusion(Scores, inf, m);
+            triFusion(Scores, m + 1, sup);
+            fusionGD(Scores, inf, sup, m);
+        }
+    }
+
+    public static ArrayList<PaireChaineEntier> removeNegative(ArrayList<PaireChaineEntier> Scores){
+        int inf = 0;
+        int sup = Scores.size();
+        int m;
+        while (inf < sup){
+            m = (inf + sup) / 2;
+            if (Scores.get(m).getEntier() <= -3){
+                sup = m;
+            }
+            else{
+                inf = m + 1;
+            }
+        }
+        return new ArrayList<>(Scores.subList(0, inf));
+    }
+
+    /*public static int poidsPourScore(int score) {
+        if (score > 6){
+            return 3;
+        }
+        if (score > 3){
+            return 2;
+        }
+        else{
+            return 1;
+        }
+    }*/
+
+    public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
+        int i = dico.size();
+        int premierTier = i/3;
+        int deuxiemeTier = (2*i)/3;
+        for (i = 0; i<premierTier; i++) {
+            dico.get(i).setEntier(3);
+        }
+        for (i=premierTier; i<deuxiemeTier; i++) {
+            dico.get(i).setEntier(2);
+        }
+        for (i=deuxiemeTier; i< dico.size(); i++) {
+            dico.get(i).setEntier(1);
+        }
+    }
+
+    /*public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
+        int max = dico.get(0).getEntier();
+        int premierTiers = max/4;
+        int deuxiemeTiers = max/2;
+        int i = 0;
+        while (dico.get(i).getEntier() > deuxiemeTiers) {
+            dico.get(i).setEntier(3);
+            i++;
+        }
+        while (dico.get(i).getEntier() > premierTiers) {
+            dico.get(i).setEntier(2);
+            i++;
+        }
+        while (i < dico.size()) {
+            dico.get(i).setEntier(1);
+            i++;
+        }
+    }*/
+
     public static void generationLexique(ArrayList<Depeche> depeches, String categorie, String nomFichier) {
+
+        //Generation des dictionnaire
+
+        try{
+
+            ArrayList<PaireChaineEntier> dico = initDico(depeches, categorie);
+            calculScores(depeches, categorie, dico);
+            triFusion(dico, 0, dico.size() - 1);
+            dico = removeNegative(dico);
+            //Generation des fichiers lexiques
+            FileWriter file = new FileWriter("./autoLexiques/" + nomFichier);
+
+
+            //Dans le cas ou dico change directement dico
+            poidsPourScore(dico);
+            for (int i = 0; i < dico.size()-1; i++) {
+                //dico.get(i).setEntier(poidsPourScore(dico.get(i).getEntier()));
+                file.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier() + "\n");
+            }
+            //Préviens du rajout d'un saut de ligne dans le fichier lexiques
+            file.write(dico.get(dico.size()-1).getChaine() + ':' + dico.get(dico.size()-1).getEntier());
+
+            file.close();
+            System.out.println(dico);
+        } catch (CategorieNotExist e){
+            System.out.println(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
     }
 
@@ -167,12 +280,11 @@ public class Classification {
         System.out.println("chargement des dépêches");
         ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
 
-        //Affichage des depeches
-        /*for (int i = 0; i < depeches.size(); i++) {
-            depeches.get(i).afficher();
-        }
-        System.out.println("Fin de l'affichage des dépêches.");
-        */
+        generationLexique(depechesForLexique, "environnement-sciences", "./environnement-sciences.txt");
+        generationLexique(depechesForLexique, "culture", "./culture.txt");
+        generationLexique(depechesForLexique, "economie", "./economie.txt");
+        generationLexique(depechesForLexique, "politique", "./politique.txt");
+        generationLexique(depechesForLexique, "sports", "./sports.txt");
 
         // Create different categories
         ArrayList<PaireChaineEntier> paires = new ArrayList<>();
@@ -192,36 +304,19 @@ public class Classification {
         cat.add(sport);
 
         // Initialize lexical vectors
-        culture.initLexique("./lexiques/culture.txt");
-        economie.initLexique("./lexiques/economie.txt");
-        environnementsiences.initLexique("./lexiques/environnements-sciences.txt");
-        politique.initLexique("./lexiques/politique.txt");
-        sport.initLexique("./lexiques/sports.txt");
+        String lexiques = "./autoLexiques/";
+        culture.initLexique(lexiques + "culture.txt");
+        economie.initLexique(lexiques + "economie.txt");
+        environnementsiences.initLexique(lexiques + "environnement-sciences.txt");
+        politique.initLexique(lexiques + "politique.txt");
+        sport.initLexique(lexiques + "sports.txt");
 
-        ArrayList<PaireChaineEntier> liste = new ArrayList<>();
 
-        int depecheid = 105;
-        liste.add(new PaireChaineEntier("Culture", culture.score(depeches.get(depecheid))));
-        liste.add(new PaireChaineEntier("Economie", economie.score(depeches.get(depecheid))));
-        liste.add(new PaireChaineEntier("Sciences", environnementsiences.score(depeches.get(depecheid))));
-        liste.add(new PaireChaineEntier("Politique", politique.score(depeches.get(depecheid))));
-        liste.add(new PaireChaineEntier("Sport", sport.score(depeches.get(depecheid))));
-        /*
-        System.out.println("Culture: " + culture.score(depeches.get(depecheid)));
-        System.out.println("Economie: " + economie.score(depeches.get(depecheid)));
-        System.out.println("Sciences: " + environnementsiences.score(depeches.get(depecheid)));
-        System.out.println("Politique: " + politique.score(depeches.get(depecheid)));
-        System.out.println("Sport: " + sport.score(depeches.get(depecheid)));
-        */
+
 
         classementDepeches(depeches, cat, "./res.txt");
 
 
-        try{
-            initDico(depeches, "Culture");
-        } catch (CategorieNotExist e){
-            System.out.println(e);
-        }
 
     }
 
