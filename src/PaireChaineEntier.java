@@ -30,4 +30,12 @@ public class PaireChaineEntier {
     public String toString() {
         return chaine + ':' + entier;
     }
+
+    public int compareTo(PaireChaineEntier PaireChaine) {
+        if (PaireChaine.getEntier() > entier) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
 }

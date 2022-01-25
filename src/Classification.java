@@ -64,6 +64,7 @@ public class Classification {
                     resultat.add(new PaireChaineEntier(depeches.get(i).getMots().get(j), 0));
                 }
             }
+            i++;
         }
 
         return resultat;
@@ -71,6 +72,22 @@ public class Classification {
     }
 
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
+        int i = 0;
+        categorie = categorie.toUpperCase();
+        while(i < dictionnaire.size()){
+            int j = 0;
+            while (j < depeches.size()) {
+                if (depeches.get(j).getMots().contains(dictionnaire.get(i).getChaine())) {
+                    if (depeches.get(j).getCategorie().compareTo(categorie) == 0) {
+                        dictionnaire.get(i).increment();
+                    } else {
+                        dictionnaire.get(i).decrement();
+                    }
+                }
+                j++;
+            }
+            i++;
+        }
     }
 
 
@@ -278,7 +295,8 @@ public class Classification {
 
         //Chargement des dépêches en mémoire
         System.out.println("chargement des dépêches");
-        ArrayList<Depeche> depeches = lectureDepeches("./depeches.txt");
+        ArrayList<Depeche> depechesForLexique = lectureDepeches("./depeches.txt");
+        ArrayList<Depeche> depeches = lectureDepeches("./test.txt");
 
         generationLexique(depechesForLexique, "environnement-sciences", "./environnement-sciences.txt");
         generationLexique(depechesForLexique, "culture", "./culture.txt");
