@@ -1768,7 +1768,7 @@ confiance.
 .C ECONOMIE
 .T Cette terre est à nous, foi de paysans
 Des villageois spoliés du Jiangsu ont brisé un tabou de la Chine
-communiste : ils se sont déclarés propriétaires des etrres
+communiste : ils se sont déclarés propriétaires des terres
 où ils vivent. En théorie, une loi du 1er octobre 2007 leur donne
 raison. 
 
@@ -2052,7 +2052,7 @@ en France est reparti à la hausse en janvier.
 Le groupe français de médias et de
 télécommunications a profité du succès de son jeu
 en ligne "World of Warcraft". Point noir, le recul du résultat
-opérationnel de SFR. 
+opérationnel de SFR.
 
 .N 264
 .D 010308

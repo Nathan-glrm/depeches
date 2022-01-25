@@ -58,3 +58,4 @@ artiste:3
 cinéastes:2
 bibliothèque:2
 architecturale:2
+européenne:1

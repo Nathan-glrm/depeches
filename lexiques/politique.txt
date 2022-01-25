@@ -38,7 +38,7 @@ polémique:2
 candidats:2
 judiciaire:1
 plainte:1
-ministre:2
+ministre:1
 sénateur:2
 subventions:1
 gouvernement:2
@@ -54,3 +54,4 @@ réélu:2
 administratif:2
 secrétaire:2
 PCF:1
+campagne:2
