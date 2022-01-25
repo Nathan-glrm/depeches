@@ -146,6 +146,8 @@ public class Classification {
         return new ArrayList<>(Scores.subList(0, inf));
     }
 
+
+    //poidsPourScore de base
     /*public static int poidsPourScore(int score) {
         if (score > 6){
             return 3;
@@ -158,6 +160,7 @@ public class Classification {
         }
     }*/
 
+    //poids
     public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
         int i = dico.size();
         int premierTier = i/3;
@@ -284,7 +287,6 @@ public class Classification {
             System.out.println(correctGuess);
             System.out.println("MOYENNE: " + moyenne/categories.size() + "%");
             file.close();
-            System.out.println("votre saisie a été écrite avec succès dans fichier-sortie.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }
