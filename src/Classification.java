@@ -280,7 +280,7 @@ public class Classification {
         generationLexique(depechesForLexique, economie, "./economie.txt");
         generationLexique(depechesForLexique, politique, "./politique.txt");
         generationLexique(depechesForLexique, sport, "./sports.txt");
-        System.out.println("Generation en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");*/
+        System.out.println("Generation en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");
 
 
         // New ArrayList for categories
