@@ -47,9 +47,9 @@ public class UtilitairePaireChaineEntier {
 
     }
 
-    public static int entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
+    public static int recherchePourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
         if (vPaires.get(vPaires.size()-1).getChaine().compareTo(chaine) < 0){
-            return 0;
+            return -1;
         }
         else{
             int inf = 0;
@@ -65,10 +65,10 @@ public class UtilitairePaireChaineEntier {
                 }
             }
             if (vPaires.get(inf).getChaine().compareTo(chaine) == 0){
-                return vPaires.get(inf).getEntier();
+                return inf;
             }
             else{
-                return 0;
+                return -1;
             }
         }
     }

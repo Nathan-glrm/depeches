@@ -23,7 +23,7 @@ public class PaireChaineEntier {
         this.entier++;
     }
     public void decrement(){
-        this.entier = this.entier - 2;
+        this.entier = this.entier - 3;
     }
 
     @Override

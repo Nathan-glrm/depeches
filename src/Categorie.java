@@ -58,6 +58,9 @@ public class Categorie {
         int i = 0;
         int score = 0;
         //AVANCER PAR MOT ET RECHERCHER LE MOT EN QUESTION PAR UNE RECHERCHE DICHO, SI TROUVER RETOURNER LE SCORE
+        /*
+        ArrayList<String> mots = d.getMots();
+        int i = 0;
         while (i < lexique.size()) { // Loop for each lexical word
             if (mots.contains(lexique.get(i).getChaine().toLowerCase())) { // if lexical word is found in the depeche
                 int y = 0;
@@ -69,11 +72,10 @@ public class Categorie {
                 }
             }
             i++;
-        }
-
-        /*for (int j = 0; j < d.getMots().size(); j++) {
-            score += UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
         }*/
+        for (int j = 0; j < d.getMots().size(); j++) {
+            score += UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
+        }
 
         return score;
     }
