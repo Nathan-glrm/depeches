@@ -41,6 +41,7 @@ public class Classification {
         return depeches;
     }
 
+    // Pour une catégorie donnée, renvoie tous les mots associés (tous les mots des dépêches d'une catégorie)
     public static ArrayList<PaireChaineEntier> initDico(ArrayList<Depeche> depeches, String categorie) throws CategorieNotExist {
         ArrayList<PaireChaineEntier> resultat = new ArrayList<>();
         categorie = categorie.toUpperCase();
@@ -70,6 +71,38 @@ public class Classification {
 
     }
 
+    public static ArrayList<PaireChaineEntier> initDic(ArrayList<Depeche> depeches, String categorie) throws CategorieNotExist {
+        ArrayList<PaireChaineEntier> resultat = new ArrayList<>();
+        ArrayList<String> tempresult = new ArrayList<>();
+        categorie = categorie.toUpperCase();
+        //Les depeches étant regroupées par catégorie, on recherche l'index de la première depeche de la catégorie recherchée.
+
+        int i = 0;
+        while(i < depeches.size() && depeches.get(i).getCategorie().compareTo(categorie) != 0){
+            i++;
+        }
+        if (i == depeches.size()){
+            throw new CategorieNotExist("Catégorie n'existe pas dans depeches");
+        }
+        // i correspond à l'index du premier élément de depeches correspondant à la catégorie
+
+
+        // IDEE OPTI: Trier le vecteur resultat pour faire bcp moins de comparaison dans le cas où on fait sans le tempresult
+        while (i < depeches.size() && depeches.get(i).getCategorie().compareTo(categorie) == 0){
+            for (int j = 0; j < depeches.get(i).getMots().size(); j++) {
+                if (!tempresult.contains(depeches.get(i).getMots().get(j))){
+                    tempresult.add(depeches.get(i).getMots().get(j));
+                    resultat.add(new PaireChaineEntier(depeches.get(i).getMots().get(j), 0));
+                }
+            }
+            i++;
+        }
+
+        return resultat;
+
+    }
+
+    // Calcul des scores (Apparition des mots dans leur catégorie (incrémentation du score) et dans les autres (decrementation du score)
     public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         int i = 0;
         categorie = categorie.toUpperCase();
@@ -111,17 +144,16 @@ public class Classification {
     }*/
 
 
-
+    // Tri fusion est plus rapide que les autres tris, nombre de comparaisons divisé par près de 10.
     private static void fusionGD(ArrayList<PaireChaineEntier> Scores, int inf, int sup, int m){
         ArrayList<PaireChaineEntier> temp = new ArrayList<>();
         int i = inf;
         int j = m+1;
         while (i <= m && j <= sup){
-            if (Scores.get(i).getEntier() >= Scores.get(j).getEntier()){
+            if (Scores.get(i).getEntier() >= Scores.get(j).getEntier()) {
                 temp.add(Scores.get(i));
                 i++;
-            }
-            else{
+            } else {
                 temp.add(Scores.get(j));
                 j++;
             }
@@ -142,6 +174,7 @@ public class Classification {
         }
     }
 
+    // Fonction appelant le tri fusion, situé juste au-dessus
     private static void triFusion(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
         if (inf < sup) {
             int m = (inf + sup) / 2;
@@ -168,7 +201,7 @@ public class Classification {
     }
 
 
-    //poidsPourScore de base
+    // poidsPourScore de base, avec choix de la ponderation à valeur fixe
     /*public static int poidsPourScore(int score) {
         if (score > 6){
             return 3;
@@ -181,8 +214,8 @@ public class Classification {
         }
     }*/
 
-    //poids
-    public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
+    // poidsPourScore, répartissant les ponderations selon le tiers de la taille du vecteur - Pour l'instant la version qui rend les meilleurs résultatss
+    /*public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
         int i = dico.size();
         int premierTier = i/3;
         int deuxiemeTier = (2*i)/3;
@@ -195,11 +228,12 @@ public class Classification {
         for (i=deuxiemeTier; i< dico.size(); i++) {
             dico.get(i).setEntier(1);
         }
-    }
+    }*/
 
+    // poidsPourScore, utilisant la valeur maximale de PaireChaine entier pour déterminer la pondération
     /*public static void poidsPourScore(ArrayList<PaireChaineEntier> dico) {
         int max = dico.get(0).getEntier();
-        int premierTiers = max/4;
+        int premierTiers = max/7;
         int deuxiemeTiers = max/2;
         int i = 0;
         while (dico.get(i).getEntier() > deuxiemeTiers) {
@@ -234,10 +268,8 @@ public class Classification {
         }
     }
 
-    public static void generationLexique(ArrayList<Depeche> depeches, String categorie, String nomFichier) {
-
+    public static void generationLexique(ArrayList<Depeche> depeches, String categorie, String nomFichier, int div1, int div2) {
         //Generation des dictionnaire
-
         try{
             ArrayList<PaireChaineEntier> dico = initDico(depeches, categorie); //3ms
             //System.out.println(dico);
@@ -284,7 +316,6 @@ public class Classification {
                 correctGuess.add(new PaireChaineEntier(categories.get(j).getNom(), 0));
             }
             while (i < depeches.size()) {
-
                 //Calculer le score de la dépeche pour chaque catégories
                 ArrayList<PaireChaineEntier> listeDeScore = new ArrayList<>();
                 for (int j = 0; j < categories.size(); j++) {
@@ -296,30 +327,25 @@ public class Classification {
                 //System.out.println(depeches.get(i).getId()+":"+cat);
                 int index = UtilitairePaireChaineEntier.indicePourChaine(depechePerCat, cat);
                 depechePerCat.get(index).setEntier(depechePerCat.get(index).getEntier() + 1);
-
-
                 if (depeches.get(i).getCategorie().compareToIgnoreCase(cat) == 0){
                     int indexCorrectGuess = UtilitairePaireChaineEntier.indicePourChaine(correctGuess, cat);
-                    correctGuess.get(indexCorrectGuess ).setEntier(correctGuess.get(indexCorrectGuess).getEntier() + 1);
+                    correctGuess.get(indexCorrectGuess).setEntier(correctGuess.get(indexCorrectGuess).getEntier() + 1);
                 }
-
-                file.write(depeches.get(i).getId()+':'+cat.toUpperCase() + "\n");
-
+                // file.write(depeches.get(i).getId()+':'+cat.toUpperCase() + "\n");
                 i++;
             }
             float moyenne = 0.0f;
             for (int j = 0; j < correctGuess.size(); j++) {
-                file.write(correctGuess.get(j).getChaine().toUpperCase() + ":" + correctGuess.get(j).getEntier() + "%\n");
+                //file.write(correctGuess.get(j).getChaine().toUpperCase() + ":" + correctGuess.get(j).getEntier() + "%\n");
                 moyenne += correctGuess.get(j).getEntier();
             }
             //Caclculer le pourcentage de réussite
             file.write("MOYENNE: " + moyenne/categories.size() + "%");
 
-
-            System.out.println(depechePerCat);
-            System.out.println(correctGuess);
+            //System.out.println(depechePerCat);
+            //System.out.println(correctGuess);
             System.out.println("MOYENNE: " + moyenne/categories.size() + "%");
-            file.close();
+            //file.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
