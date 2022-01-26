@@ -237,6 +237,7 @@ public class Classification {
 
 
             for (int i = 0; i < dico.size() - 1; i++) {
+
                 file.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier() + "\n");
             }
             categorie.setLexique(dico);
@@ -329,14 +330,6 @@ public class Classification {
 
         System.out.println("Generation des lexiques à partir du fichier depeches.txt en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");
 
-
-        // Create different categories
-        ArrayList<PaireChaineEntier> paires = new ArrayList<>();
-        Categorie culture = new Categorie("culture");
-        Categorie economie = new Categorie("economie");
-        Categorie environnementsiences = new Categorie("environnement-sciences");
-        Categorie politique = new Categorie("politique");
-        Categorie sport = new Categorie("sports");
 
         // New ArrayList for categories
         ArrayList<Categorie> cat = new ArrayList<>();

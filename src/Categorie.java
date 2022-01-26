@@ -22,10 +22,13 @@ public class Categorie {
     }
 
 
-    public  ArrayList<PaireChaineEntier> getLexique() {
+    public ArrayList<PaireChaineEntier> getLexique() {
         return lexique;
     }
 
+    public void setLexique(ArrayList<PaireChaineEntier> lexique) {
+        this.lexique = lexique;
+    }
 
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
