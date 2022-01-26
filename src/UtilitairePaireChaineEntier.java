@@ -73,6 +73,30 @@ public class UtilitairePaireChaineEntier {
         }
     }
 
+    public static int entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
+        if (((PaireChaineEntier)vPaires.get(vPaires.size() - 1)).getChaine().compareToIgnoreCase(chaine) < 0) {
+            return 0;
+        } else {
+            int inf = 0;
+            int sup = vPaires.size() - 1;
+
+            while(inf < sup) {
+                int m = (inf + sup) / 2;
+                if (((PaireChaineEntier)vPaires.get(m)).getChaine().compareToIgnoreCase(chaine) >= 0) {
+                    sup = m;
+                } else {
+                    inf = m + 1;
+                }
+            }
+
+            if (((PaireChaineEntier)vPaires.get(inf)).getChaine().compareToIgnoreCase(chaine) == 0) {
+                return ((PaireChaineEntier)vPaires.get(inf)).getEntier();
+            } else {
+                return 0;
+            }
+        }
+    }
+
     public static String chaineMax(ArrayList<PaireChaineEntier> listePaires) {
         PaireChaineEntier max = listePaires.get(0);
         int i = 1;
