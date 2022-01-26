@@ -71,6 +71,13 @@ public class Utilitaire {
             k++;
         }
     }
+    public static boolean estTrieString(ArrayList<PaireChaineEntier> v){
+        int i = 1;
+        while(i < v.size() && v.get(i).getChaine().compareTo(v.get(i - 1).getChaine()) >= 0){
+            i++;
+        }
+        return i == v.size();
+    }
 
     // Fonction appelant le tri fusion, situé juste au-dessus
     public static void triFusionString(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {

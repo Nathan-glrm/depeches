@@ -1,14 +1,11 @@
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class Categorie {
 
-    private String nom; // le nom de la catégorie p.ex : sport, politique,...
+    private final String nom; // le nom de la catégorie p.ex : sport, politique,...
     private ArrayList<PaireChaineEntier> lexique; //le lexique de la catégorie
 
     // constructeur
@@ -16,11 +13,9 @@ public class Categorie {
         this.nom = nom;
     }
 
-
     public String getNom() {
         return nom;
     }
-
 
     public ArrayList<PaireChaineEntier> getLexique() {
         return lexique;
@@ -30,7 +25,8 @@ public class Categorie {
         this.lexique = lexique;
     }
 
-    // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
+    // initialisation du lexique de la catégorie à partir du contenu d'un FICHIER TEXTE
+    // Cette methode est inutilisé car les lexiques sont initialisé dans generationLexique()
     public void initLexique(String nomFichier) {
         ArrayList<PaireChaineEntier> Paires = new ArrayList<>();
         try {
@@ -47,7 +43,12 @@ public class Categorie {
                 Paires.add(unePaire);
             }
             scanner.close();
+            //Verifie que Paires est trié par ordre alphabétique car c'est nécessaire pour la suite du programme
+            if (!Utilitaire.estTrieString(Paires)) {
+                Utilitaire.triFusionString(Paires, 0, Paires.size() - 1);
+            }
             this.lexique = Paires;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -57,29 +58,10 @@ public class Categorie {
 
     // calcul du score d'une dépêche pour la catégorie
     public int score(Depeche d) {
-        ArrayList<String> mots = d.getMots();
-        int i = 0;
         int score = 0;
-        //AVANCER PAR MOT ET RECHERCHER LE MOT EN QUESTION PAR UNE RECHERCHE DICHO, SI TROUVER RETOURNER LE SCORE
-        /*
-        ArrayList<String> mots = d.getMots();
-        int i = 0;
-        while (i < lexique.size()) { // Loop for each lexical word
-            if (mots.contains(lexique.get(i).getChaine().toLowerCase())) { // if lexical word is found in the depeche
-                int y = 0;
-                while (y < mots.size()){ // Loop to count word occurences
-                    if (mots.get(y).compareTo(lexique.get(i).getChaine().toLowerCase()) == 0){ // Compare each word of the depeche to the lexical values
-                        score += lexique.get(i).getEntier(); // Sum scores
-                    }
-                    y++;
-                }
-            }
-            i++;
-        }*/
         for (int j = 0; j < d.getMots().size(); j++) {
             score += UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
         }
-
         return score;
     }
 

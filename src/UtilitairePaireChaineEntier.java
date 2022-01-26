@@ -74,7 +74,7 @@ public class UtilitairePaireChaineEntier {
     }
 
     public static int entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
-        if (((PaireChaineEntier)vPaires.get(vPaires.size() - 1)).getChaine().compareToIgnoreCase(chaine) < 0) {
+        if (vPaires.get(vPaires.size() - 1).getChaine().compareToIgnoreCase(chaine) < 0) {
             return 0;
         } else {
             int inf = 0;
@@ -82,15 +82,15 @@ public class UtilitairePaireChaineEntier {
 
             while(inf < sup) {
                 int m = (inf + sup) / 2;
-                if (((PaireChaineEntier)vPaires.get(m)).getChaine().compareToIgnoreCase(chaine) >= 0) {
+                if (vPaires.get(m).getChaine().compareToIgnoreCase(chaine) >= 0) {
                     sup = m;
                 } else {
                     inf = m + 1;
                 }
             }
 
-            if (((PaireChaineEntier)vPaires.get(inf)).getChaine().compareToIgnoreCase(chaine) == 0) {
-                return ((PaireChaineEntier)vPaires.get(inf)).getEntier();
+            if (vPaires.get(inf).getChaine().compareToIgnoreCase(chaine) == 0) {
+                return vPaires.get(inf).getEntier();
             } else {
                 return 0;
             }
@@ -108,14 +108,4 @@ public class UtilitairePaireChaineEntier {
         }
         return max.getChaine();
     }
-
-
-    public static float moyenne(ArrayList<PaireChaineEntier> listePaires) {
-        int somme = 0;
-        for (int i = 0; i < listePaires.size(); i++) {
-            somme += listePaires.get(i).getEntier();
-        }
-        return somme/listePaires.size();
-    }
-
 }

@@ -29,10 +29,10 @@ public class Depeche {
         chaine = chaine.replace(')', ' ');
         chaine = chaine.replace(':', ' ');
         String[] tabchaine = chaine.split(" ");
-        ArrayList<String> resultat = new ArrayList<String>();
-        for (int i = 0; i < tabchaine.length; i++) {
-            if (!tabchaine[i].equals("")) {
-                resultat.add(tabchaine[i]);
+        ArrayList<String> resultat = new ArrayList<>();
+        for (String s : tabchaine) {
+            if (!s.equals("")) {
+                resultat.add(s);
             }
         }
         return resultat;

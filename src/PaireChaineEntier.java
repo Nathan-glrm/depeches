@@ -1,5 +1,5 @@
 public class PaireChaineEntier {
-    private String chaine;
+    private final String chaine;
     private int entier;
 
     public PaireChaineEntier(String chaine, int entier){
@@ -31,11 +31,4 @@ public class PaireChaineEntier {
         return chaine + ':' + entier;
     }
 
-    public int compareTo(PaireChaineEntier PaireChaine) {
-        if (PaireChaine.getEntier() > entier) {
-            return 1;
-        } else {
-            return -1;
-        }
-    }
 }
