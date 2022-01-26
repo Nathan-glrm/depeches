@@ -214,6 +214,26 @@ public class Classification {
         }
     }
 
+    public static void poidsPourScor(ArrayList<PaireChaineEntier> dico) {
+        int max = dico.size();
+        int premierTiers = max / 3;
+        int deuxiemeTiers = (2*max) / 3;
+        int i = 0;
+        //dico est trié par entier
+        while (i < premierTiers) {
+            dico.get(i).setEntier(3);
+            i++;
+        }
+        while (i < deuxiemeTiers) {
+            dico.get(i).setEntier(2);
+            i++;
+        }
+        while (i < dico.size()) {
+            dico.get(i).setEntier(1);
+            i++;
+        }
+    }
+
     public static void generationLexique(ArrayList<Depeche> depeches, Categorie categorie, String nomFichier) {
         //Generation des dictionnaire
         try {
