@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class UtilitairePaireChaineEntier {
 
 
+    //Si présent, retourne l'indice correspondant à la chaine, sinon retourne -1
     public static int indicePourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
         int i = 0;
         while(i < listePaires.size() && listePaires.get(i).getChaine().compareTo(chaine) != 0){
@@ -16,6 +17,7 @@ public class UtilitairePaireChaineEntier {
         }
     }
 
+    //Si présent, retourne l'indice correspondant à la chaine, sinon retourne -1 dans le cas ou le vecteur est trié (Recherche dicho)
     public static int indexPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine){
         //Recherche de l'indice où inserer une valeur
         if (vPaires.size() == 0){

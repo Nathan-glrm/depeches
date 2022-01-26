@@ -106,7 +106,6 @@ public class Classification {
         return new ArrayList<>(Scores.subList(0, inf));
     }
 
-
     // poidsPourScore de base, avec choix de la ponderation à valeur fixe
     /*public static int poidsPourScore(int score) {
         if (score > 6){
@@ -141,50 +140,41 @@ public class Classification {
         }
     }
 
-    public static void poidsPourScor(ArrayList<PaireChaineEntier> dico) {
-        int max = dico.size();
-        int premierTiers = max / 3;
-        int deuxiemeTiers = (2*max) / 3;
-        int i = 0;
-        //dico est trié par entier
-        while (i < premierTiers) {
-            dico.get(i).setEntier(3);
-            i++;
-        }
-        while (i < deuxiemeTiers) {
-            dico.get(i).setEntier(2);
-            i++;
-        }
-        while (i < dico.size()) {
-            dico.get(i).setEntier(1);
-            i++;
-        }
-    }
-
-
     //Generation des dictionnaire
     public static void generationLexique(ArrayList<Depeche> depeches, Categorie categorie, String nomFichier) {
+        System.out.println("*** Creation du lexique pour la catégorie " + categorie.getNom().toUpperCase());
         try {
             //Creation du dico, trié par ordre alphabétique
+            final long dicoStartTime = System.currentTimeMillis();
             ArrayList<PaireChaineEntier> dico = initDico(depeches, categorie.getNom()); //3ms
+            System.out.println("\t\t\u001B[37mInitialisation du dico (" + dico.size() +" mots) : " + (System.currentTimeMillis() - dicoStartTime + "ms"));
 
             //Attribution d'un score en fonction de la redondance du mot
+            final long scoreStartTime = System.currentTimeMillis();
             calculScores(depeches, categorie.getNom(), dico); //7ms
+            System.out.println("\t\tCalcul du score des mots: " + (System.currentTimeMillis() - scoreStartTime + "ms"));
 
             //Tri par score
+            final long trinumStartTime = System.currentTimeMillis();
             Utilitaire.triFusionInt(dico, 0, dico.size() - 1); //0ms
+            System.out.println("\t\tTri par score: " + (System.currentTimeMillis() - trinumStartTime + "ms"));
 
             //Suppression des mots donc le score est inférieur à x, qui ne nous intéresse pas
             dico = removeNegative(dico); //0ms
 
             //Attribution en fonction du score, un poids entre 1 et 3
+            final long poidsStartTime = System.currentTimeMillis();
             poidsPourScore(dico); //0ms
+            System.out.println("\t\tPondération: " + (System.currentTimeMillis() - poidsStartTime + "ms"));
 
             //On retri par ordre alphabétique pour des besoins futur
+            final long triStringStartTime = System.currentTimeMillis();
             Utilitaire.triFusionString(dico, 0, dico.size() - 1);
+            System.out.println("\t\tTri par mots: " + (System.currentTimeMillis() - triStringStartTime + "ms"));
 
             categorie.setLexique(dico); //On envoie directement le lexique à la Catégorie pour éviter une lecture inutile des fichiers générés
             //Generation des fichiers lexiques (0ms)
+            final long ecritureStartTime = System.currentTimeMillis();
             FileWriter file = new FileWriter("./autoLexiques/" + nomFichier);
             for (int i = 0; i < dico.size() - 1; i++) {
                 file.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier() + "\n");
@@ -192,6 +182,8 @@ public class Classification {
             // Empêche le rajout d'un saut de ligne dans le fichier lexique (ce qui perturberait le système de lecture)
             file.write(dico.get(dico.size() - 1).getChaine() + ':' + dico.get(dico.size() - 1).getEntier());
             file.close();
+            System.out.println("\t\tEcriture du lexique de " + dico.size() + " mots en : " + (System.currentTimeMillis() - ecritureStartTime + "ms\u001B[0m"));
+            System.out.println("\tTemps total de création du lexique de " + categorie.getNom() + ": " + (System.currentTimeMillis() - dicoStartTime + "ms\u001B[0m\n"));
 
 
         } catch (CategorieNotExist e) {
@@ -241,15 +233,17 @@ public class Classification {
 
             //Le calcul des pourcentage de reussite est exploitable uniquement lorsque chaque catégorie possèdent respectivement 100 depeches
             file.write("\n\n ------ RESULTATS ------ \n\n");
+            System.out.println("\n ------ RESULTATS ------ \n");
             float moyenne = 0.0f;
             for (PaireChaineEntier guess : correctGuess) {
                 file.write(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%\n");
+                System.out.println(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%");
                 moyenne += guess.getEntier();
             }
             //Caclculer le pourcentage de réussite
             file.write("MOYENNE: " + moyenne / categories.size() + "%");
 
-            System.out.println("MOYENNE: " + moyenne / categories.size() + "%");
+            System.out.println("\nMOYENNE: " + moyenne / categories.size() + "%\n");
             file.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -258,13 +252,12 @@ public class Classification {
     }
 
     public static void main(String[] args) {
-
         //Chargement des dépêches en mémoire
         long startTime = System.currentTimeMillis();
         System.out.println("Chargement des dépêches");
         ArrayList<Depeche> depechesForLexique = lectureDepeches("./depeches.txt");
         ArrayList<Depeche> depeches = lectureDepeches("./test.txt");
-        System.out.println("Lecture des depeches en " + (System.currentTimeMillis() - startTime) + "ms");
+        System.out.println("Lecture des depeches en " + (System.currentTimeMillis() - startTime) + "ms\n");
 
         long lexiquesTemps = System.currentTimeMillis();
 
@@ -280,7 +273,7 @@ public class Classification {
         generationLexique(depechesForLexique, economie, "./economie.txt");
         generationLexique(depechesForLexique, politique, "./politique.txt");
         generationLexique(depechesForLexique, sport, "./sports.txt");
-        System.out.println("Generation en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");
+        System.out.println("Generation des 5 lexiques en " + (System.currentTimeMillis() - lexiquesTemps) + "ms\n");
 
 
         // New ArrayList for categories
