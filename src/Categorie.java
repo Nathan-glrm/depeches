@@ -30,7 +30,6 @@ public class Categorie {
     // initialisation du lexique de la catégorie à partir du contenu d'un fichier texte
     public void initLexique(String nomFichier) {
         ArrayList<PaireChaineEntier> Paires = new ArrayList<>();
-        System.out.println("Chargement du fichier " + nomFichier);
         try {
             // lecture du fichier d'entrée
             FileInputStream file = new FileInputStream(nomFichier); // open file for read
@@ -49,7 +48,6 @@ public class Categorie {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Fin du chargement de " + nomFichier);
     }
 
 
@@ -59,6 +57,7 @@ public class Categorie {
         ArrayList<String> mots = d.getMots();
         int i = 0;
         int score = 0;
+        //AVANCER PAR MOT ET RECHERCHER LE MOT EN QUESTION PAR UNE RECHERCHE DICHO, SI TROUVER RETOURNER LE SCORE
         while (i < lexique.size()) { // Loop for each lexical word
             if (mots.contains(lexique.get(i).getChaine().toLowerCase())) { // if lexical word is found in the depeche
                 int y = 0;
@@ -71,6 +70,11 @@ public class Categorie {
             }
             i++;
         }
+
+        /*for (int j = 0; j < d.getMots().size(); j++) {
+            score += UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
+        }*/
+
         return score;
     }
 

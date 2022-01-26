@@ -16,16 +16,60 @@ public class UtilitairePaireChaineEntier {
         }
     }
 
-    public static int entierPourChaine(ArrayList<PaireChaineEntier> listePaires, String chaine) {
-        int i = 0;
-        while(i < listePaires.size() && listePaires.get(i).getChaine().compareTo(chaine) != 0){
-            i++;
-        }
-        if (i < listePaires.size()){
-            return listePaires.get(i).getEntier();
-        }
-        else {
+    public static int indexPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine){
+        //Recherche de l'indice où inserer une valeur
+        if (vPaires.size() == 0){
             return 0;
+        }
+        if (vPaires.get(vPaires.size()-1).getChaine().compareTo(chaine) < 0){
+            return vPaires.size();
+        }
+        else{
+            int inf = 0;
+            int sup = vPaires.size()-1;
+            int m;
+            while(inf < sup){
+                m = (inf + sup)/2;
+                if (vPaires.get(m).getChaine().compareTo(chaine) >= 0){
+                    sup = m;
+                }
+                else{
+                    inf = m + 1;
+                }
+            }
+            if (vPaires.get(inf).getChaine().compareTo(chaine) == 0){
+                return -1;
+            }
+            else{
+                return inf;
+            }
+        }
+
+    }
+
+    public static int entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
+        if (vPaires.get(vPaires.size()-1).getChaine().compareTo(chaine) < 0){
+            return 0;
+        }
+        else{
+            int inf = 0;
+            int sup = vPaires.size()-1;
+            int m;
+            while(inf < sup){
+                m = (inf + sup)/2;
+                if (vPaires.get(m).getChaine().compareTo(chaine) >= 0){
+                    sup = m;
+                }
+                else{
+                    inf = m + 1;
+                }
+            }
+            if (vPaires.get(inf).getChaine().compareTo(chaine) == 0){
+                return vPaires.get(inf).getEntier();
+            }
+            else{
+                return 0;
+            }
         }
     }
 
