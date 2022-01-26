@@ -88,4 +88,17 @@ public class Utilitaire {
             fusionGDString(Scores, inf, sup, m);
         }
     }
+
+    public static boolean isNumeric(String str) {
+        for (char strNum: str.toCharArray()) {
+            try {
+                double d = Double.parseDouble(String.valueOf(strNum));
+                return true;
+            } catch (NumberFormatException nfe) {
+                return false;
+            }
+
+        }
+        return true;
+    }
 }

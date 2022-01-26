@@ -141,26 +141,42 @@ public class Classification {
         }
     }
 
-    public static void poidsPourScor(ArrayList<PaireChaineEntier> dico) {
-        int max = dico.size();
-        int premierTiers = max / 3;
-        int deuxiemeTiers = (2*max) / 3;
+    public static void ajoutMots(ArrayList<PaireChaineEntier> dico){
         int i = 0;
-        //dico est trié par entier
-        while (i < premierTiers) {
-            dico.get(i).setEntier(3);
-            i++;
-        }
-        while (i < deuxiemeTiers) {
-            dico.get(i).setEntier(2);
-            i++;
-        }
-        while (i < dico.size()) {
-            dico.get(i).setEntier(1);
+        ArrayList<PaireChaineEntier> dicoInitial = new ArrayList<>(dico);
+        ArrayList<PaireChaineEntier> motsAAjouter = new ArrayList<>();
+        while (i < dicoInitial.size()){
+            String mot = dicoInitial.get(i).getChaine();
+            int longeurMot = mot.length();
+            char dernierChar = mot.charAt(longeurMot - 1);
+            int entierMot = dicoInitial.get(i).getEntier();
+
+            if (longeurMot > 3 && !Utilitaire.isNumeric(mot)) {
+                if (dernierChar == 'e') { //Feminin singulier
+                    motsAAjouter.add(new PaireChaineEntier(mot + 's', entierMot));
+                    motsAAjouter.add(new PaireChaineEntier(mot.substring(0, longeurMot - 1), entierMot));
+                } else if (dernierChar != 's' && dicoInitial.get(i).getChaine().charAt(longeurMot - 2) != 'e') { //Masculin singulier
+                    motsAAjouter.add(new PaireChaineEntier(mot + "es", entierMot));
+                    motsAAjouter.add(new PaireChaineEntier(mot + 's', entierMot));
+                } else if (dernierChar == 's' && dicoInitial.get(i).getChaine().charAt(longeurMot - 2) != 'e') { //Masculin pluriel
+                    motsAAjouter.add(new PaireChaineEntier(mot.substring(0, longeurMot - 1) + "es", entierMot));
+                    motsAAjouter.add(new PaireChaineEntier(mot.substring(0, longeurMot - 1), entierMot));
+                } else if (dernierChar == 's' && dicoInitial.get(i).getChaine().charAt(longeurMot - 2) == 'e') { //Feminin pluriel
+                    motsAAjouter.add(new PaireChaineEntier(mot.substring(0, longeurMot - 1), entierMot));
+                    motsAAjouter.add(new PaireChaineEntier(mot.substring(0, longeurMot - 2) + 's', entierMot));
+                }
+
+
+            }
+            for (PaireChaineEntier motAajouter : motsAAjouter) {
+                int index = UtilitairePaireChaineEntier.indexPourChaineTrie(dico, motAajouter.getChaine());
+                if (index > -1) {
+                    dico.add(index, new PaireChaineEntier(motAajouter.getChaine(), motAajouter.getEntier()));
+                }
+            }
             i++;
         }
     }
-
 
     //Generation des dictionnaire
     public static void generationLexique(ArrayList<Depeche> depeches, Categorie categorie, String nomFichier) {
@@ -182,6 +198,8 @@ public class Classification {
 
             //On retri par ordre alphabétique pour des besoins futur
             Utilitaire.triFusionString(dico, 0, dico.size() - 1);
+
+            ajoutMots(dico);
 
             categorie.setLexique(dico); //On envoie directement le lexique à la Catégorie pour éviter une lecture inutile des fichiers générés
             //Generation des fichiers lexiques (0ms)
@@ -280,7 +298,7 @@ public class Classification {
         generationLexique(depechesForLexique, economie, "./economie.txt");
         generationLexique(depechesForLexique, politique, "./politique.txt");
         generationLexique(depechesForLexique, sport, "./sports.txt");
-        System.out.println("Generation en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");*/
+        System.out.println("Generation en " + (System.currentTimeMillis() - lexiquesTemps) + "ms");
 
 
         // New ArrayList for categories
