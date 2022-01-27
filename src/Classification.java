@@ -1,41 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Classification {
-
-    /*private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
-        //creation d'un tableau de dépêches
-        ArrayList<Depeche> depeches = new ArrayList<>();
-        try {
-            // lecture du fichier d'entrée
-            FileInputStream file = new FileInputStream(nomFichier);
-            Scanner scanner = new Scanner(file);
-
-            while (scanner.hasNextLine()) {
-                String ligne = scanner.nextLine();
-                String id = ligne.substring(3);
-                ligne = scanner.nextLine();
-                String date = ligne.substring(3);
-                ligne = scanner.nextLine();
-                String categorie = ligne.substring(3);
-                ligne = scanner.nextLine();
-                StringBuilder lignes = new StringBuilder(ligne.substring(3));
-                while (scanner.hasNextLine() && !ligne.equals("")) {
-                    ligne = scanner.nextLine();
-                    if (!ligne.equals("")) {
-                        lignes.append('\n').append(ligne);
-                    }
-                }
-                Depeche uneDepeche = new Depeche(id, date, categorie, lignes.toString());
-                depeches.add(uneDepeche);
-            }
-            scanner.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return depeches;
-    }*/
 
     //On utilise l'objet Buffer de java qui à de meilleurs performance que FileInputStream (entre 2 à 3 fois plus vite)
     private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
@@ -45,15 +11,15 @@ public class Classification {
             // lecture du fichier d'entrée
             Reader file = new FileReader(nomFichier);
             BufferedReader br = new BufferedReader(file, 300000);
-            //Scanner scanner = new Scanner(file);
-            String ligne = null;
+
+            String ligne;
             while ((ligne = br.readLine()) != null) {
                 String id = ligne.substring(3);
-                ligne =  br.readLine();
+                ligne = br.readLine();
                 String date = ligne.substring(3);
-                ligne =  br.readLine();
+                ligne = br.readLine();
                 String categorie = ligne.substring(3);
-                ligne =  br.readLine();
+                ligne = br.readLine();
                 StringBuilder lignes = new StringBuilder(ligne.substring(3));
                 while ((ligne = br.readLine()) != null && !ligne.equals("")) {
                     lignes.append('\n').append(ligne);
@@ -181,41 +147,51 @@ public class Classification {
             //Creation du dico, trié par ordre alphabétique
             final long dicoStartTime = System.currentTimeMillis();
             ArrayList<PaireChaineEntier> dico = initDico(depeches, categorie.getNom()); //3ms
-            System.out.println("\t\t\u001B[37mInitialisation du dico (" + dico.size() +" mots) : " + (System.currentTimeMillis() - dicoStartTime + "ms"));
+            System.out.println("\t\t\u001B[37mInitialisation du dico (" + dico.size() + " mots) : " + (System.currentTimeMillis() - dicoStartTime + "ms"));
+
 
             //Attribution d'un score en fonction de la redondance du mot
             final long scoreStartTime = System.currentTimeMillis();
             int comp = calculScores(depeches, categorie.getNom(), dico); //7ms
-            System.out.println("\t\tCalcul du score des mots ("+ comp + " comparaisons) : " + (System.currentTimeMillis() - scoreStartTime + "ms"));
+            System.out.println("\t\tCalcul du score des mots (" + comp + " comparaisons) : " + (System.currentTimeMillis() - scoreStartTime + "ms"));
+
 
             //Tri par score
             final long trinumStartTime = System.currentTimeMillis();
             comp = Utilitaire.triFusionInt(dico, 0, dico.size() - 1); //0ms
             System.out.println("\t\tTri par score (" + comp + " comparaisons) : " + (System.currentTimeMillis() - trinumStartTime + "ms"));
 
-            //Suppression des mots donc le score est inférieur à x, qui ne nous intéresse pas
-            dico = removeNegative(dico); //0ms
 
-            //Attribution en fonction du score, un poids entre 1 et 3
+            //Suppression des mots donc le score est inférieur à x, qui ne nous intéresse pas
             final long poidsStartTime = System.currentTimeMillis();
+
+            dico = removeNegative(dico); //0ms
+            //Attribution en fonction du score, un poids entre 1 et 3
             poidsPourScore(dico); //0ms
-            System.out.println("\t\tPondération: " + (System.currentTimeMillis() - poidsStartTime + "ms"));
+            System.out.println("\t\tSuppression des mots inutle & pondération: " + (System.currentTimeMillis() - poidsStartTime + "ms"));
+
 
             //On retri par ordre alphabétique pour des besoins futur
             final long triStringStartTime = System.currentTimeMillis();
             Utilitaire.triFusionString(dico, 0, dico.size() - 1);
             System.out.println("\t\tTri par mots: " + (System.currentTimeMillis() - triStringStartTime + "ms"));
 
+
             categorie.setLexique(dico); //On envoie directement le lexique à la Catégorie pour éviter une lecture inutile des fichiers générés
-            //Generation des fichiers lexiques (0ms)
+
+
+            //Generation des fichiers lexiques (2-4ms)
             final long ecritureStartTime = System.currentTimeMillis();
-            FileWriter file = new FileWriter("./autoLexiques/" + nomFichier);
+
+            Writer file = new FileWriter("./autoLexiques/" + nomFichier);
+            BufferedWriter br = new BufferedWriter(file, 16384);
             for (int i = 0; i < dico.size() - 1; i++) {
-                file.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier() + "\n");
+                br.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier());
+                br.newLine();
             }
             // Empêche le rajout d'un saut de ligne dans le fichier lexique (ce qui perturberait le système de lecture)
-            file.write(dico.get(dico.size() - 1).getChaine() + ':' + dico.get(dico.size() - 1).getEntier());
-            file.close();
+            br.write(dico.get(dico.size() - 1).getChaine() + ':' + dico.get(dico.size() - 1).getEntier());
+            br.close();
             System.out.println("\t\tEcriture du lexique de " + dico.size() + " mots en : " + (System.currentTimeMillis() - ecritureStartTime + "ms\u001B[0m"));
             System.out.println("\tTemps total de création du lexique de " + categorie.getNom() + ": " + (System.currentTimeMillis() - dicoStartTime + "ms\u001B[0m\n"));
 
@@ -232,8 +208,8 @@ public class Classification {
     public static void classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
         int i = 0;
         try {
-            FileWriter file = new FileWriter(nomFichier);
-
+            Writer file = new FileWriter(nomFichier);
+            BufferedWriter br = new BufferedWriter(file, 16384);
             //Generation de deux ArrayList, un qui compte le nombre de depeches qui ont été assignés à la catégorie et un autre qui compte les assignations correctes
             ArrayList<PaireChaineEntier> depechePerCat = new ArrayList<>();
             ArrayList<PaireChaineEntier> correctGuess = new ArrayList<>();
@@ -246,7 +222,6 @@ public class Classification {
 
             //Classement des depeches
             while (i < depeches.size()) {
-
                 //Calculer le score de la dépeche pour chaque catégories
                 ArrayList<PaireChaineEntier> listeDeScore = new ArrayList<>();
                 for (Categorie category : categories) {
@@ -261,24 +236,26 @@ public class Classification {
                 if (depeches.get(i).getCategorie().compareToIgnoreCase(cat) == 0) {
                     correctGuess.get(index).setEntier(correctGuess.get(index).getEntier() + 1);     //Ajoute dans le compteur d'assignation correcte
                 }
-                file.write(depeches.get(i).getId() + ':' + cat.toUpperCase() + "\n");
+                br.write(depeches.get(i).getId() + ':' + cat.toUpperCase());
+                br.newLine();
                 i++;
             }
 
             //Le calcul des pourcentage de reussite est exploitable uniquement lorsque chaque catégorie possèdent respectivement 100 depeches
-            file.write("\n\n ------ RESULTATS ------ \n\n");
+            br.write("\n\n ------ RESULTATS ------ \n\n");
             System.out.println("\n ------ RESULTATS ------ \n");
             float moyenne = 0.0f;
             for (PaireChaineEntier guess : correctGuess) {
-                file.write(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%\n");
-                System.out.printf("%-25s%5s%s",guess.getChaine().toUpperCase().concat(":"), guess.getEntier(),"%\n");
+                br.write(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%");
+                br.newLine();
+                System.out.printf("%-25s%5s%s", guess.getChaine().toUpperCase().concat(":"), guess.getEntier(), "%\n");
                 moyenne += guess.getEntier();
             }
             //Caclculer le pourcentage de réussite
-            file.write("MOYENNE: " + moyenne / categories.size() + "%");
+            br.write("MOYENNE: " + moyenne / categories.size() + "%");
 
             System.out.println("\nMOYENNE: " + moyenne / categories.size() + "%\n");
-            file.close();
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -321,9 +298,7 @@ public class Classification {
 
         //Initialisation des lexiques écrit manuellement
 
-
-        /*
-        String lexiques = "./autoLexiques/";
+        /*String lexiques = "./lexiques/";
         culture.initLexique(lexiques + "culture.txt");
         economie.initLexique(lexiques + "economie.txt");
         environnementsiences.initLexique(lexiques + "environnement-sciences.txt");
