@@ -243,7 +243,7 @@ public class Classification {
 
             //Le calcul des pourcentage de reussite est exploitable uniquement lorsque chaque catégorie possèdent respectivement 100 depeches
             br.write("\n\n ------ RESULTATS ------ \n\n");
-            System.out.println("\n ------ RESULTATS ------ \n");
+            System.out.println("\n ------ RÉSULTATS ------ \n");
             float moyenne = 0.0f;
             for (PaireChaineEntier guess : correctGuess) {
                 br.write(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%");
