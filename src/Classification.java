@@ -1,12 +1,10 @@
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Classification {
 
-    private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
+    /*private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
         //creation d'un tableau de dépêches
         ArrayList<Depeche> depeches = new ArrayList<>();
         try {
@@ -33,6 +31,37 @@ public class Classification {
                 depeches.add(uneDepeche);
             }
             scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return depeches;
+    }*/
+
+    //On utilise l'objet Buffer de java qui à de meilleurs performance que FileInputStream (entre 2 à 3 fois plus vite)
+    private static ArrayList<Depeche> lectureDepeches(String nomFichier) {
+        //creation d'un tableau de dépêches
+        ArrayList<Depeche> depeches = new ArrayList<>();
+        try {
+            // lecture du fichier d'entrée
+            Reader file = new FileReader(nomFichier);
+            BufferedReader br = new BufferedReader(file, 300000);
+            //Scanner scanner = new Scanner(file);
+            String ligne = null;
+            while ((ligne = br.readLine()) != null) {
+                String id = ligne.substring(3);
+                ligne =  br.readLine();
+                String date = ligne.substring(3);
+                ligne =  br.readLine();
+                String categorie = ligne.substring(3);
+                ligne =  br.readLine();
+                StringBuilder lignes = new StringBuilder(ligne.substring(3));
+                while ((ligne = br.readLine()) != null && !ligne.equals("")) {
+                    lignes.append('\n').append(ligne);
+                }
+                Depeche uneDepeche = new Depeche(id, date, categorie, lignes.toString());
+                depeches.add(uneDepeche);
+            }
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,25 +98,30 @@ public class Classification {
     }
 
     // Calcul des scores (Apparition des mots dans leur catégorie (incrémentation du score) et dans les autres (decrementation du score)
-    public static void calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
+    public static int calculScores(ArrayList<Depeche> depeches, String categorie, ArrayList<PaireChaineEntier> dictionnaire) {
         int i = 0;
+        int nbComp = 0;
         categorie = categorie.toUpperCase();
         while (i < depeches.size()) {
             int j = 0;
             while (j < depeches.get(i).getMots().size()) {
-                int index = UtilitairePaireChaineEntier.recherchePourChaineTrie(dictionnaire, depeches.get(i).getMots().get(j));
+                PaireEntierComparaison recherche = UtilitairePaireChaineEntier.recherchePourChaineTrie(dictionnaire, depeches.get(i).getMots().get(j));
+                int index = recherche.getEntier();
+                nbComp += recherche.getNbComp();
                 if (index < dictionnaire.size() && index >= 0) {
                     if (depeches.get(i).getCategorie().compareTo(categorie) == 0) {
                         dictionnaire.get(index).increment();
                     } else if (depeches.get(i).getCategorie().compareTo(categorie) != 0) {
                         dictionnaire.get(index).decrement();
                     }
+                    nbComp++;
                 }
 
                 j++;
             }
             i++;
         }
+        return nbComp;
     }
 
     // Fonction de suppression des entiers donc le score est trop négatif (ici -3 offre les meilleurs résultat)
@@ -151,13 +185,13 @@ public class Classification {
 
             //Attribution d'un score en fonction de la redondance du mot
             final long scoreStartTime = System.currentTimeMillis();
-            calculScores(depeches, categorie.getNom(), dico); //7ms
-            System.out.println("\t\tCalcul du score des mots: " + (System.currentTimeMillis() - scoreStartTime + "ms"));
+            int comp = calculScores(depeches, categorie.getNom(), dico); //7ms
+            System.out.println("\t\tCalcul du score des mots ("+ comp + " comparaisons) : " + (System.currentTimeMillis() - scoreStartTime + "ms"));
 
             //Tri par score
             final long trinumStartTime = System.currentTimeMillis();
-            Utilitaire.triFusionInt(dico, 0, dico.size() - 1); //0ms
-            System.out.println("\t\tTri par score: " + (System.currentTimeMillis() - trinumStartTime + "ms"));
+            comp = Utilitaire.triFusionInt(dico, 0, dico.size() - 1); //0ms
+            System.out.println("\t\tTri par score (" + comp + " comparaisons) : " + (System.currentTimeMillis() - trinumStartTime + "ms"));
 
             //Suppression des mots donc le score est inférieur à x, qui ne nous intéresse pas
             dico = removeNegative(dico); //0ms
@@ -237,7 +271,7 @@ public class Classification {
             float moyenne = 0.0f;
             for (PaireChaineEntier guess : correctGuess) {
                 file.write(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%\n");
-                System.out.println(guess.getChaine().toUpperCase() + ":" + guess.getEntier() + "%");
+                System.out.printf("%-25s%5s%s",guess.getChaine().toUpperCase().concat(":"), guess.getEntier(),"%\n");
                 moyenne += guess.getEntier();
             }
             //Caclculer le pourcentage de réussite
@@ -300,7 +334,7 @@ public class Classification {
 
         //Classement des depeches de test.txt
         long classementStartTime = System.currentTimeMillis();
-        classementDepeches(depeches, cat, "./res.txt");
+        classementDepeches(depeches, cat, "./resultat.txt");
         System.out.println("Classement des depeches en " + (System.currentTimeMillis() - classementStartTime) + "ms");
 
         long endTime = System.currentTimeMillis();

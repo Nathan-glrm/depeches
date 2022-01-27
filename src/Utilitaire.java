@@ -2,11 +2,13 @@ import java.util.ArrayList;
 
 public class Utilitaire {
     // Tri fusion est plus rapide que les autres tris, nombre de comparaisons divisé par près de 10.
-    private static void fusionGD(ArrayList<PaireChaineEntier> Scores, int inf, int sup, int m){
+    private static int fusionGD(ArrayList<PaireChaineEntier> Scores, int inf, int sup, int m){
         ArrayList<PaireChaineEntier> temp = new ArrayList<>();
         int i = inf;
         int j = m+1;
+        int nbComp = 0;
         while (i <= m && j <= sup){
+            nbComp++;
             if (Scores.get(i).getEntier() >= Scores.get(j).getEntier()) {
                 temp.add(Scores.get(i));
                 i++;
@@ -29,16 +31,19 @@ public class Utilitaire {
             Scores.set(k + inf, temp.get(k));
             k++;
         }
+        return nbComp;
     }
 
     // Fonction appelant le tri fusion, situé juste au-dessus
-    public static void triFusionInt(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
+    public static int triFusionInt(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
+        int nbComp = 0;
         if (inf < sup) {
             int m = (inf + sup) / 2;
-            triFusionInt(Scores, inf, m);
-            triFusionInt(Scores, m + 1, sup);
-            fusionGD(Scores, inf, sup, m);
+            nbComp += triFusionInt(Scores, inf, m);
+            nbComp += triFusionInt(Scores, m + 1, sup);
+            nbComp += fusionGD(Scores, inf, sup, m);
         }
+        return nbComp;
     }
 
 

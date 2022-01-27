@@ -49,16 +49,18 @@ public class UtilitairePaireChaineEntier {
 
     }
 
-    public static int recherchePourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
+    public static PaireEntierComparaison recherchePourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
         if (vPaires.get(vPaires.size()-1).getChaine().compareTo(chaine) < 0){
-            return -1;
+            return new PaireEntierComparaison(-1, 1);
         }
         else{
+            int nbComp = 0;
             int inf = 0;
             int sup = vPaires.size()-1;
             int m;
             while(inf < sup){
                 m = (inf + sup)/2;
+                nbComp++;
                 if (vPaires.get(m).getChaine().compareTo(chaine) >= 0){
                     sup = m;
                 }
@@ -67,10 +69,10 @@ public class UtilitairePaireChaineEntier {
                 }
             }
             if (vPaires.get(inf).getChaine().compareTo(chaine) == 0){
-                return inf;
+                return new PaireEntierComparaison(inf,nbComp);
             }
             else{
-                return -1;
+                return new PaireEntierComparaison(-1, nbComp);
             }
         }
     }
