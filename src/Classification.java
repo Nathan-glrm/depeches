@@ -179,19 +179,30 @@ public class Classification {
 
             categorie.setLexique(dico); //On envoie directement le lexique à la Catégorie pour éviter une lecture inutile des fichiers générés
 
-
             //Generation des fichiers lexiques (2-4ms)
             final long ecritureStartTime = System.currentTimeMillis();
 
             Writer file = new FileWriter("./autoLexiques/" + nomFichier);
-            BufferedWriter br = new BufferedWriter(file, 16384);
+            System.out.println("Etape1:" + (System.currentTimeMillis() - ecritureStartTime));
+            BufferedWriter br = new BufferedWriter(file);
+            System.out.println("Etape2:" + (System.currentTimeMillis() - ecritureStartTime));
             for (int i = 0; i < dico.size() - 1; i++) {
                 br.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier());
                 br.newLine();
+                br.flush();
             }
+            System.out.println("Etape2:" + (System.currentTimeMillis() - ecritureStartTime));
             // Empêche le rajout d'un saut de ligne dans le fichier lexique (ce qui perturberait le système de lecture)
             br.write(dico.get(dico.size() - 1).getChaine() + ':' + dico.get(dico.size() - 1).getEntier());
             br.close();
+            System.out.println("Etape4:" + (System.currentTimeMillis() - ecritureStartTime));
+            /*FileWriter file = new FileWriter("./autoLexiques/" + nomFichier);
+            for (int i = 0; i < dico.size() - 1; i++) {
+                file.write(dico.get(i).getChaine() + ':' + dico.get(i).getEntier() + "\n");
+            }
+            // Empêche le rajout d'un saut de ligne dans le fichier lexique (ce qui perturberait le système de lecture)
+            file.write(dico.get(dico.size() - 1).getChaine() + ':' + dico.get(dico.size() - 1).getEntier());
+            file.close();*/
             System.out.println("\t\tEcriture du lexique de " + dico.size() + " mots en : " + (System.currentTimeMillis() - ecritureStartTime + "ms\u001B[0m"));
             System.out.println("\tTemps total de création du lexique de " + categorie.getNom() + ": " + (System.currentTimeMillis() - dicoStartTime + "ms\u001B[0m\n"));
 
