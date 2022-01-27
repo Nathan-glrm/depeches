@@ -168,13 +168,13 @@ public class Classification {
             dico = removeNegative(dico); //0ms
             //Attribution en fonction du score, un poids entre 1 et 3
             poidsPourScore(dico); //0ms
-            System.out.println("\t\tSuppression des mots inutle & pondération: " + (System.currentTimeMillis() - poidsStartTime + "ms"));
+            System.out.println("\t\tSuppression des mots non pertinents & pondération: " + (System.currentTimeMillis() - poidsStartTime + "ms"));
 
 
             //On retri par ordre alphabétique pour des besoins futur
             final long triStringStartTime = System.currentTimeMillis();
-            Utilitaire.triFusionString(dico, 0, dico.size() - 1);
-            System.out.println("\t\tTri par mots: " + (System.currentTimeMillis() - triStringStartTime + "ms"));
+            comp = Utilitaire.triFusionString(dico, 0, dico.size() - 1);
+            System.out.println("\t\tTri par mots (" + comp + " comparaisons) : " + (System.currentTimeMillis() - triStringStartTime + "ms"));
 
 
             categorie.setLexique(dico); //On envoie directement le lexique à la Catégorie pour éviter une lecture inutile des fichiers générés
@@ -205,8 +205,9 @@ public class Classification {
 
     }
 
-    public static void classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
+    public static int classementDepeches(ArrayList<Depeche> depeches, ArrayList<Categorie> categories, String nomFichier) {
         int i = 0;
+        int nbComp = 0;
         try {
             Writer file = new FileWriter(nomFichier);
             BufferedWriter br = new BufferedWriter(file, 16384);
@@ -219,13 +220,14 @@ public class Classification {
                 correctGuess.add(new PaireChaineEntier(category.getNom(), 0));
             }
 
-
             //Classement des depeches
             while (i < depeches.size()) {
                 //Calculer le score de la dépeche pour chaque catégories
                 ArrayList<PaireChaineEntier> listeDeScore = new ArrayList<>();
                 for (Categorie category : categories) {
-                    listeDeScore.add(new PaireChaineEntier(category.getNom(), category.score(depeches.get(i))));
+                    PaireEntierComparaison score = category.score(depeches.get(i));
+                    listeDeScore.add(new PaireChaineEntier(category.getNom(), score.getEntier()));
+                    nbComp += score.getNbComp();
                 }
 
                 //Recuperer la meilleur catégorie
@@ -259,7 +261,7 @@ public class Classification {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        return nbComp;
     }
 
     public static void main(String[] args) {
@@ -309,8 +311,8 @@ public class Classification {
 
         //Classement des depeches de test.txt
         long classementStartTime = System.currentTimeMillis();
-        classementDepeches(depeches, cat, "./resultat.txt");
-        System.out.println("Classement des depeches en " + (System.currentTimeMillis() - classementStartTime) + "ms");
+        int comp = classementDepeches(depeches, cat, "./resultat.txt");
+        System.out.println("Classement des depeches (" + comp +" comparaisons) en " + (System.currentTimeMillis() - classementStartTime) + "ms");
 
         long endTime = System.currentTimeMillis();
         System.out.println("Temps total d'execution du programme en : " + (endTime - startTime) + "ms");

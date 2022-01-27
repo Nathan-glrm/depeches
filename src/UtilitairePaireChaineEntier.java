@@ -77,14 +77,15 @@ public class UtilitairePaireChaineEntier {
         }
     }
 
-    public static int entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
+    public static PaireEntierComparaison entierPourChaineTrie(ArrayList<PaireChaineEntier> vPaires, String chaine) {
         if (vPaires.get(vPaires.size() - 1).getChaine().compareToIgnoreCase(chaine) < 0) {
-            return 0;
+            return new PaireEntierComparaison(0, 1);
         } else {
             int inf = 0;
             int sup = vPaires.size() - 1;
-
+            int nbComp = 0;
             while(inf < sup) {
+                nbComp++;
                 int m = (inf + sup) / 2;
                 if (vPaires.get(m).getChaine().compareToIgnoreCase(chaine) >= 0) {
                     sup = m;
@@ -94,9 +95,9 @@ public class UtilitairePaireChaineEntier {
             }
 
             if (vPaires.get(inf).getChaine().compareToIgnoreCase(chaine) == 0) {
-                return vPaires.get(inf).getEntier();
+                return new PaireEntierComparaison(vPaires.get(inf).getEntier(), nbComp);
             } else {
-                return 0;
+                return new PaireEntierComparaison(0, nbComp);
             }
         }
     }

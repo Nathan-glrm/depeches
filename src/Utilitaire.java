@@ -48,11 +48,13 @@ public class Utilitaire {
 
 
 
-    private static void fusionGDString(ArrayList<PaireChaineEntier> Lexiques, int inf, int sup, int m){
+    private static int fusionGDString(ArrayList<PaireChaineEntier> Lexiques, int inf, int sup, int m){
         ArrayList<PaireChaineEntier> temp = new ArrayList<>();
         int i = inf;
         int j = m+1;
+        int nbComp = 0;
         while (i <= m && j <= sup){
+            nbComp++;
             if (Lexiques.get(i).getChaine().compareTo(Lexiques.get(j).getChaine()) <= 0) {
                 temp.add(Lexiques.get(i));
                 i++;
@@ -75,6 +77,19 @@ public class Utilitaire {
             Lexiques.set(k + inf, temp.get(k));
             k++;
         }
+        return nbComp;
+    }
+
+    // Fonction appelant le tri fusion, situé juste au-dessus
+    public static int triFusionString(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
+        int nbComp = 0;
+        if (inf < sup) {
+            int m = (inf + sup) / 2;
+            nbComp += triFusionString(Scores, inf, m);
+            nbComp += triFusionString(Scores, m + 1, sup);
+            nbComp += fusionGDString(Scores, inf, sup, m);
+        }
+        return nbComp;
     }
     public static boolean estTrieString(ArrayList<PaireChaineEntier> v){
         int i = 1;
@@ -82,15 +97,5 @@ public class Utilitaire {
             i++;
         }
         return i == v.size();
-    }
-
-    // Fonction appelant le tri fusion, situé juste au-dessus
-    public static void triFusionString(ArrayList<PaireChaineEntier> Scores, int inf, int sup) {
-        if (inf < sup) {
-            int m = (inf + sup) / 2;
-            triFusionString(Scores, inf, m);
-            triFusionString(Scores, m + 1, sup);
-            fusionGDString(Scores, inf, sup, m);
-        }
     }
 }

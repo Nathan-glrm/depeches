@@ -56,12 +56,15 @@ public class Categorie {
 
 
     // calcul du score d'une dépêche pour la catégorie
-    public int score(Depeche d) {
+    public PaireEntierComparaison score(Depeche d) {
         int score = 0;
+        int nbComp = 0;
         for (int j = 0; j < d.getMots().size(); j++) {
-            score += UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
+            PaireEntierComparaison scorecomp = UtilitairePaireChaineEntier.entierPourChaineTrie(lexique, d.getMots().get(j));
+            score += scorecomp.getEntier();
+            nbComp += scorecomp.getNbComp();
         }
-        return score;
+        return new PaireEntierComparaison(score, nbComp);
     }
 
     @Override
